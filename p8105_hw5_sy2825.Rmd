@@ -1,0 +1,11 @@
+---
+title: "P8105_hw5_sy2825"
+author: "Shuo Yan (sy2825)"
+output: github_document
+date: "2018-11-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
