@@ -9,3 +9,29 @@ date: "2018-11-06"
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
+
+# Poblem 1
+
+First, let's import data and create a tidy dataframe containing data from all participants.
+
+```{r import_and_tidy_data}
+
+file_names = list.files(path = "./data", pattern = ".*csv")
+
+file_data = map(file_names, ~ read.csv(file.path("./data", .)))
+
+longitudinal_data = tibble(name = str_replace(file_names, ".csv", "")) %>%
+  mutate(file_data = file_data) %>%
+  unnest() %>%
+  janitor::clean_names() %>%
+  gather(key = week, value = observations, week_1:week_8) %>%
+  mutate(week = str_replace(week, "week_", "")) %>%
+  separate(name, into = c("arm", "id"), sep = "_") %>%
+  mutate(arm = str_replace(arm, "con", "control")) %>%
+  mutate(arm = str_replace(arm, "exp", "experimental"))
+
+# Now we have a tidied dataframe :
+
+longitudinal_data
+```
+
