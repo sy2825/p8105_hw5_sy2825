@@ -14,7 +14,7 @@ library(tidyverse)
 
 First, let's import data and create a tidy dataframe containing data from all participants.
 
-```{r import_and_tidy_data}
+```{r import_and_tidy_longitudinal_data}
 
 file_names = list.files(path = "./data", pattern = ".*csv")
 
@@ -34,4 +34,24 @@ longitudinal_data = tibble(name = str_replace(file_names, ".csv", "")) %>%
 
 longitudinal_data
 ```
+
+The following is the spaghetti plot showing observations on each subject over time :
+
+```{r longitudinal_data_plot}
+
+ggplot(longitudinal_data, aes(x = week, y = observations, group = id, color = id)) +
+  geom_path() + 
+  labs(title = "Observations on each subject over time",
+       x = "Week",
+       y = "Observations") + 
+  viridis::scale_color_viridis(
+    name = "Subject ID", 
+    discrete = TRUE) +
+  facet_grid(. ~ arm) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+From the plot we can see that the observation values of experimental group are mostly higher than the observation values of control group. Also, the observation values of experimental group tend to increase over time.
+
+
 
