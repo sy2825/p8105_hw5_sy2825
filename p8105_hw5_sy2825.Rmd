@@ -8,6 +8,8 @@ date: "2018-11-06"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+
+
 ```
 
 # Poblem 1
@@ -54,4 +56,21 @@ ggplot(longitudinal_data, aes(x = week, y = observations, group = id, color = id
 From the plot we can see that the observation values of experimental group are mostly higher than the observation values of control group. Also, the observation values of experimental group tend to increase over time.
 
 
+# Problem 2
 
+First, let's import and describe the raw data.
+
+```{r describe_raw_washington_post_data}
+
+url = "https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv"
+
+washington_post_data = read.csv(url)
+
+setNames(
+data.frame(colnames(washington_post_data)),
+c("variable name")
+)
+
+```
+
+The raw data is a data with dimension `r dim(washington_post_data)`. It includes 12 distinct variales that can describe the information about case id, case reported date, case location (city, state, latitude, and lontitude), disposition, and also victim's name (last name and first name), race , age, and sex.
