@@ -83,7 +83,9 @@ tidy_washington_post_data = washington_post_data %>%
   janitor::clean_names() %>%
   mutate(city_state = paste(washington_post_data$city, washington_post_data$state, sep = ", ")) %>%
   group_by(city_state) %>%
-  summarize(total_homicides = n(), total_unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest")))
+  summarize(total_homicides = n(), 
+            total_unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest"))) %>%
+  filter(total_homicides > 1)
 
 tidy_washington_post_data
 ```
@@ -133,3 +135,30 @@ all_cities_prop_test
 ```
 
 Now we have a dataframe with estimated proportions and confidence intervals of homicides that are unsolved for all cities.
+
+The following plot visualizes the estimated proportions and CIs of unsolved homicides for all cities.
+```{r estimated_proportion_plot}
+all_cities_prop_test %>%
+  mutate(city_state = fct_reorder(city_state, estimated_proportions)) %>%
+ggplot(aes(x = city_state, y = estimated_proportions)) +
+  geom_point(
+    aes(color = city_state)
+  ) +
+  geom_errorbar(aes(
+    ymin = conf_low,
+    ymax = conf_high
+  )) + 
+  labs(
+    title = "Estimated proportions and CIs of unsolved homicides for 50 cities",
+    x = "City",
+    y = "Estimated proportions",
+    caption = "Data from Washington Post"
+  ) +
+    viridis::scale_color_viridis(discrete = TRUE) + 
+  theme_bw() +
+  theme(legend.position = "false") +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1)) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+From the graph we can see that Chicago(IL) has the highest estimated proportion of homicides that are unsolved while Richmond(VA) has the least estimated proportion of unsolved homicides
