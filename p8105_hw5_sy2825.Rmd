@@ -104,3 +104,32 @@ broom::tidy(baltimore_md_prop_test) %>%
 ```
 
 From the test we can know that the estimated proportion of homicides that are unsolved for the city of Baltimore, MD is 64.6% and the confidence intervale is from 62.8% to 66.3%.
+
+Now we are going to make the proportion test for all cities.
+
+```{r proportion_unsolved_all_cities}
+
+proportion_test = function(x) {
+
+  city = tidy_washington_post_data %>%
+    filter(city_state == x)
+  
+  prop_test_result = prop.test(city$total_unsolved_homicides,
+                               city$total_homicides)
+  
+  broom::tidy(prop_test_result) %>%
+    select(1, 5, 6) %>%
+    mutate(city_state = x) %>%
+    select(4, 1, 2, 3) %>%
+    rename(estimated_proportions = estimate) %>%
+    janitor::clean_names()
+}
+
+all_cities_prop_test = map(tidy_washington_post_data$city_state, proportion_test) %>%
+  tibble() %>%
+  unnest()
+
+all_cities_prop_test
+```
+
+Now we have a dataframe with estimated proportions and confidence intervals of homicides that are unsolved for all cities.
