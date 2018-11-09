@@ -82,8 +82,25 @@ Now let's tidy the data.
 tidy_washington_post_data = washington_post_data %>%
   janitor::clean_names() %>%
   mutate(city_state = paste(washington_post_data$city, washington_post_data$state, sep = ", ")) %>%
-  group_by(city_state)
+  group_by(city_state) %>%
+  summarize(total_homicides = n(), total_unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest")))
 
-summarize(tidy_washington_post_data, total_homicides = n(), total_unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest")))
+tidy_washington_post_data
 ```
 The above table shows the total number of homicides and the number of unsolved homicides for each city.
+
+Now let's estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
+
+```{r proportion_unsolved_baltimore_md}
+
+baltimore_md = tidy_washington_post_data %>%
+  filter(city_state == "Baltimore, MD")
+
+baltimore_md_prop_test = prop.test(baltimore_md$total_unsolved_homicides, 
+                                   baltimore_md$total_homicides)
+
+broom::tidy(baltimore_md_prop_test) %>%
+  select(1, 5, 6)
+```
+
+From the test we can know that the estimated proportion of homicides that are unsolved for the city of Baltimore, MD is 64.6% and the confidence intervale is from 62.8% to 66.3%.
