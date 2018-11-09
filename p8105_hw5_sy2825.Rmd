@@ -74,3 +74,16 @@ c("variable name")
 ```
 
 The raw data is a data with dimension `r dim(washington_post_data)`. It includes 12 distinct variales that can describe the information about case id, case reported date, case location (city, state, latitude, and lontitude), disposition, and also victim's name (last name and first name), race , age, and sex.
+
+Now let's tidy the data.
+
+```{r tidy_washington_post_data}
+
+tidy_washington_post_data = washington_post_data %>%
+  janitor::clean_names() %>%
+  mutate(city_state = paste(washington_post_data$city, washington_post_data$state, sep = ", ")) %>%
+  group_by(city_state)
+
+summarize(tidy_washington_post_data, total_homicides = n(), total_unsolved_homicides = sum(disposition %in% c("Closed without arrest", "Open/No arrest")))
+```
+The above table shows the total number of homicides and the number of unsolved homicides for each city.
